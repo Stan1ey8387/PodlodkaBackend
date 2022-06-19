@@ -16,20 +16,8 @@ fun Application.configureRegisterRouting() {
 
     routing {
         post("/register") {
-            val registerRecive = call.receive<RegisterReciveRemote>()
-
-            if (InMemoryCache.userList.map { it.login }.contains(registerRecive.login)) {
-                call.respond(ResponseError(text = "Пользователь с таким логином уже существует", code = 400))
-            }
-            else if (!registerRecive.email.isValidEmail()) {
-                call.respond(ResponseError(text = "Введен некорректный email адрес", code = 400))
-            }
-            else {
-                val token = UUID.randomUUID().toString()
-                InMemoryCache.userList.add(registerRecive)
-                InMemoryCache.tokenList.add(TokenCache(login = registerRecive.login, token = token))
-                call.respond(LoginResponseRemote(token))
-            }
+            val registerController = RegisterController(call)
+            registerController.register()
         }
     }
 }

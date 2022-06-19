@@ -15,16 +15,8 @@ fun Application.configureLoginRouting() {
 
     routing {
         post("/login") {
-            val loginRecive = call.receive(LoginReciveRemote::class)
-            var user = InMemoryCache.userList.firstOrNull() { it.login == loginRecive.login }
-
-            if (user != null && user.password == loginRecive.password) {
-                val token = UUID.randomUUID().toString()
-                InMemoryCache.tokenList.add(TokenCache(login = loginRecive.login, token = token))
-                call.respond(LoginResponseRemote(token))
-            }
-
-            call.respond(ResponseError(text = "Введен неверный логин или пароль", code = 400))
+            val loginController = LoginController(call)
+            loginController.login()
         }
     }
 }
